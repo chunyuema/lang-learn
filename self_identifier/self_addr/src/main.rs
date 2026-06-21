@@ -3,6 +3,7 @@ use ::std::ptr::addr_of;
 struct Rectangle {
     width: u32,
     heigth: i32,
+    description: String,
 }
 
 impl Rectangle {
@@ -11,16 +12,23 @@ impl Rectangle {
         // This self will be a different variable with different address
         let self_address = addr_of!(self) as usize;
         println!(
-            "Inside the function call, the address of self is 0x{:x}",
+            "Inside the check_address, the address of self is 0x{:x}",
             self_address
         );
 
         let data_addr = (&self as *const Rectangle) as usize;
         println!("Inside check_address, data address is 0x{:x}", data_addr);
+
+        let description_data_addr = self.description.as_ptr() as usize;
+        println!(
+            "Inside check_address, description data address is 0x{:x}",
+            description_data_addr
+        );
     }
 
     fn check_address_ref(&self) {
         println!("check_address_ref let 'self' borrows from 'rect', no move, we still have 'rect' afterwards");
+        // This self is the same self, but data is not moved to self, it only borrows
         let self_address = addr_of!(self) as usize;
         println!(
             "Inside the check_address_ref, the address of self is 0x{:x}",
@@ -32,6 +40,12 @@ impl Rectangle {
             "Inside check_address_ref, data address is 0x{:x}",
             data_addr
         );
+
+        let description_data_addr = self.description.as_ptr() as usize;
+        println!(
+            "Inside check_address_ref, description data address is 0x{:x}",
+            description_data_addr
+        );
     }
 }
 
@@ -39,6 +53,7 @@ fn main() {
     let rect = Rectangle {
         width: 10,
         heigth: 20,
+        description: String::from("I am a beautiful rectangle"),
     };
     let rect_addr = addr_of!(rect) as usize;
     println!(
@@ -49,6 +64,11 @@ fn main() {
     println!(
         "Inside main fucntion call, data address is 0x{:x}",
         data_addr
+    );
+    let description_data_addr = rect.description.as_ptr() as usize;
+    println!(
+        "Inside main function call, description data address is 0x{:x}",
+        description_data_addr
     );
 
     println!("=================");
