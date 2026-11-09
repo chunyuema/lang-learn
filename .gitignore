@@ -1,1 +1,12 @@
+# Local project instructions and editor settings
+AGENTS.md
+.vscode/
+
+# macOS metadata
+.DS_Store
+
+# Build outputs
 target/
+*.o
+*.out
+a.out
