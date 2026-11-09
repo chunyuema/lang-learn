@@ -46,7 +46,7 @@ Each topic owns its sources and any topic-specific run or test harness. Cross-la
 
 ### Error hierarchies
 
-The [Notion notes](https://app.notion.com/p/413e5d67dda680928e80e372f34c7a98) compare how C++ and Rust preserve error details as a failure moves through a program.
+The [Notion notes](https://springbound.notion.site/Error-hierarchies-exceptions-vs-nested-enums-413e5d67dda680928e80e372f34c7a98) compare how C++ and Rust preserve error details as a failure moves through a program.
 
 | Source | What it demonstrates |
 | --- | --- |
