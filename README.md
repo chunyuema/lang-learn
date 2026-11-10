@@ -36,8 +36,11 @@ The runner builds in temporary directories where practical. Rust's Cargo output 
     │   └── rust/
     ├── ownership-and-borrowing/
     │   └── rust/self-address/  # Moving and borrowing `self`
-    └── thread-lifetime/
-        └── cpp/                # Joinable thread destruction
+    ├── thread-lifetime/
+    │   └── cpp/                # Joinable thread destruction
+    └── thread-errors/
+        ├── cpp/                # exception_ptr and uncaught exceptions
+        └── rust/               # join Results, panic payloads, and channels
 ```
 
 Each topic owns its sources and any topic-specific run or test harness. Cross-language examples live in sibling language directories within the same topic.
@@ -64,6 +67,21 @@ The Rust self-address example prints stack and heap addresses before and after b
 ### Thread lifetime
 
 The C++ example demonstrates why destroying a joinable `std::thread` calls `std::terminate`, including when another exception is already unwinding the stack. Its abnormal exit is intentional and counted as a successful observation by the harness.
+
+### Errors across threads
+
+The [Notion notes](https://app.notion.com/p/414e5d67dda680b8b0e9f694903e6ff9) compare how worker failures reach—or fail to reach—the joining thread. Run `./run thread-errors` to see all of these paths:
+
+| Source | What it demonstrates |
+| --- | --- |
+| `cpp/uncaught.cpp` | An exception escaping a worker terminates the process; a catch around `join()` cannot see it. |
+| `cpp/exception-ptr.cpp` | The worker catches and stores an exception, then main rethrows it after joining. |
+| `cpp/multiple-workers.cpp` | One pre-sized exception slot per worker preserves dynamic exception types without a mutex. |
+| `rust/panic_join.rs` | `join()` returns a panic payload that the joining thread can inspect. |
+| `rust/result_join.rs` | Expected errors and panics form a nested `Result<Result<_, _>, _>`. |
+| `rust/channel_loss.rs` | A panic before `send` produces no channel message; retaining and joining handles detects it. |
+
+The harness checks the intentional C++ abnormal exit and keeps panic diagnostics visible. It does not execute undefined behavior such as rethrowing an empty `std::exception_ptr`.
 
 ## Adding an example
 

@@ -8,6 +8,7 @@ list_examples() {
 error-hierarchies       Compare typed error propagation in C++ and Rust
 ownership-self-address Observe Rust moves, borrows, and object addresses
 thread-lifetime        Observe C++ termination from an unjoined thread
+thread-errors          Compare cross-thread failures in C++ and Rust
 EOF
 }
 
@@ -21,6 +22,9 @@ run_example() {
             ;;
         thread-lifetime)
             sh "$repo_dir/examples/thread-lifetime/run.sh"
+            ;;
+        thread-errors)
+            sh "$repo_dir/examples/thread-errors/run.sh"
             ;;
         *)
             printf 'Unknown example: %s\n\n' "$1" >&2
@@ -55,6 +59,7 @@ case "${1:-list}" in
         ;;
     check)
         sh "$repo_dir/examples/error-hierarchies/cpp/check.sh"
+        sh "$repo_dir/examples/thread-errors/run.sh" >/dev/null 2>&1
         ;;
     help|-h|--help)
         usage
