@@ -17,11 +17,7 @@ Run one example or every example:
 ./run all
 ```
 
-These commands show the programs' actual output so you can compare it directly with the source. To run automated output and compiler-diagnostic assertions instead, use:
-
-```sh
-./run check
-```
+These commands show the programs' actual output so you can compare it directly with the source and validate the demonstrated behavior.
 
 The runner builds in temporary directories where practical. Rust's Cargo output is written to `target/`, which is ignored by Git.
 
@@ -43,7 +39,7 @@ The runner builds in temporary directories where practical. Rust's Cargo output 
         └── rust/               # join Results, panic payloads, and channels
 ```
 
-Each topic owns its sources and any topic-specific run or test harness. Cross-language examples live in sibling language directories within the same topic.
+Each topic owns its sources and any topic-specific runner. Cross-language examples live in sibling language directories within the same topic.
 
 ## Examples
 
@@ -58,7 +54,7 @@ The [Notion notes](https://springbound.notion.site/Error-hierarchies-exceptions-
 | `examples/error-hierarchies/rust/result.rs` | Nested errors, exhaustive matching, and propagation through `?` and `From`. |
 | `examples/error-hierarchies/rust/panic.rs` | Catching an unwinding panic and inspecting its payload. |
 
-This example requires Clang with C++23 `<expected>` support and `rustc`. The fetches are simulated. Run `./run error-hierarchies` to see the successful programs side by side. Run `./run check` to also verify the intentionally triggered C++ handler-order warning and Rust E0277 diagnostic.
+This example requires Clang with C++23 `<expected>` support and `rustc`. The fetches are simulated. Run `./run error-hierarchies` to see the successful programs side by side.
 
 ### Ownership and borrowing
 
@@ -86,7 +82,7 @@ The harness checks the intentional C++ abnormal exit and keeps panic diagnostics
 ## Adding an example
 
 1. Create `examples/<concept>/<language>/` and keep all files for the concept together.
-2. Add a small `run.sh` when the example needs compilation flags, expected-output checks, or an intentionally failing command.
+2. Add a small `run.sh` when the example needs compilation flags or an intentionally failing command.
 3. Register a stable ID in the root `run` script and document the concept here.
 
 Prefer examples that are focused, deterministic where possible, and explicit about whether compilation or runtime failure is intentional.

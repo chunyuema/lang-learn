@@ -40,7 +40,6 @@ Usage:
   ./run list
   ./run <example-id>
   ./run all
-  ./run check
 
 Examples:
 $(list_examples)
@@ -56,10 +55,6 @@ case "${1:-list}" in
             printf '\n==> %s\n' "$example_id"
             run_example "$example_id"
         done
-        ;;
-    check)
-        sh "$repo_dir/examples/error-hierarchies/cpp/check.sh"
-        sh "$repo_dir/examples/thread-errors/run.sh" >/dev/null 2>&1
         ;;
     help|-h|--help)
         usage
