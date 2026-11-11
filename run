@@ -9,6 +9,7 @@ error-hierarchies       Compare typed error propagation in C++ and Rust
 ownership-self-address Observe Rust moves, borrows, and object addresses
 thread-lifetime        Observe C++ termination from an unjoined thread
 thread-errors          Compare cross-thread failures in C++ and Rust
+noexcept-moves         Compare C++ and Rust moves during vector growth
 EOF
 }
 
@@ -25,6 +26,9 @@ run_example() {
             ;;
         thread-errors)
             sh "$repo_dir/examples/thread-errors/run.sh"
+            ;;
+        noexcept-moves)
+            sh "$repo_dir/examples/noexcept-moves/run.sh"
             ;;
         *)
             printf 'Unknown example: %s\n\n' "$1" >&2

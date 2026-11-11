@@ -2,16 +2,13 @@
 set -eu
 
 example_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-build_dir=$(mktemp -d)
-trap 'rm -rf "$build_dir"' EXIT
+repo_dir=$(CDPATH= cd -- "$example_dir/../.." && pwd)
+. "$repo_dir/harness.sh"
+harness_init
 
 "${CXX:-c++}" -std=c++17 -Wall -Wextra -Werror -pthread \
-    "$example_dir/cpp/thread-and-crash.cpp" -o "$build_dir/thread-and-crash"
+    "$example_dir/cpp/thread-and-crash.cpp" -o "$HARNESS_BUILD_DIR/thread-and-crash"
 
-printf '%s\n' 'This example is expected to terminate because a joinable std::thread is destroyed during stack unwinding.'
-if "$build_dir/thread-and-crash"; then
-    printf '%s\n' 'Expected the program to terminate, but it exited successfully.' >&2
-    exit 1
-fi
-
-printf '%s\n' 'Observed the expected abnormal termination.'
+run_expected_abort thread-and-crash \
+    'C++: destroying a joinable thread during unwinding terminates the process' \
+    "$HARNESS_BUILD_DIR/thread-and-crash"

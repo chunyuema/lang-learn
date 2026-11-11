@@ -25,9 +25,13 @@ The runner builds in temporary directories where practical. Rust's Cargo output 
 
 ```text
 .
-├── run                         # Repository-level example runner
+├── harness.sh                  # Shared output and process-control helpers
+├── run                         # Repository-level example dispatcher
 └── examples/
     ├── error-hierarchies/      # C++ exceptions/expected vs Rust Result/panic
+    │   ├── cpp/
+    │   └── rust/
+    ├── noexcept-moves/         # Move behavior and non-unwinding boundaries
     │   ├── cpp/
     │   └── rust/
     ├── ownership-and-borrowing/
@@ -39,7 +43,7 @@ The runner builds in temporary directories where practical. Rust's Cargo output 
         └── rust/               # join Results, panic payloads, and channels
 ```
 
-Each topic owns its sources and any topic-specific runner. Cross-language examples live in sibling language directories within the same topic.
+Each topic owns its sources, compilation flags, concept-specific checks, and a small `run.sh`. Topic runners source `harness.sh` for labeled output, temporary build directories, and expected-abort handling. Cross-language examples live in sibling language directories within the same topic.
 
 ## Examples
 
@@ -79,10 +83,14 @@ The [Notion notes](https://app.notion.com/p/414e5d67dda680b8b0e9f694903e6ff9) co
 
 The harness checks the intentional C++ abnormal exit and keeps panic diagnostics visible. It does not execute undefined behavior such as rethrowing an empty `std::exception_ptr`.
 
+### Noexcept and moves
+
+Run `./run noexcept-moves` with a C++17 compiler and `rustc`. Three C++ programs compare copying, `noexcept` moving, and move-only types during vector growth; another prints inferred move traits. The Rust programs show `Vec` growth, moving and cloning a `String`, and a failed `try_reserve` that preserves the vector. The harness also contrasts the C++ `noexcept` and Rust `extern "C"` boundaries while containing their intentional aborts. [Notion notes](https://app.notion.com/p/415e5d67dda6804ca844c25ee2087d9e)
+
 ## Adding an example
 
 1. Create `examples/<concept>/<language>/` and keep all files for the concept together.
-2. Add a small `run.sh` when the example needs compilation flags or an intentionally failing command.
+2. Add a small `run.sh` that sources `harness.sh`. Keep compilation and concept-specific assertions in the topic, and use the shared `run_sample` or `run_expected_abort` helpers for learner-facing execution.
 3. Register a stable ID in the root `run` script and document the concept here.
 
 Prefer examples that are focused, deterministic where possible, and explicit about whether compilation or runtime failure is intentional.
