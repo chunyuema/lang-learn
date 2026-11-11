@@ -2,26 +2,21 @@
 set -eu
 
 example_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-build_dir=$(mktemp -d)
-trap 'rm -rf "$build_dir"' EXIT
+repo_dir=$(CDPATH= cd -- "$example_dir/../.." && pwd)
+. "$repo_dir/harness.sh"
+harness_init
 
 "${CXX:-clang++}" -std=c++23 -Wno-exceptions \
-    "$example_dir/cpp/exceptions.cpp" -o "$build_dir/exceptions"
+    "$example_dir/cpp/exceptions.cpp" -o "$HARNESS_BUILD_DIR/exceptions"
 "${CXX:-clang++}" -std=c++23 -Wall -Wextra -Werror \
-    "$example_dir/cpp/expected.cpp" -o "$build_dir/expected"
+    "$example_dir/cpp/expected.cpp" -o "$HARNESS_BUILD_DIR/expected"
 "${RUSTC:-rustc}" --edition=2021 -D warnings \
-    "$example_dir/rust/result.rs" -o "$build_dir/result"
+    "$example_dir/rust/result.rs" -o "$HARNESS_BUILD_DIR/result"
 "${RUSTC:-rustc}" --edition=2021 -D warnings -C panic=unwind \
-    "$example_dir/rust/panic.rs" -o "$build_dir/panic"
+    "$example_dir/rust/panic.rs" -o "$HARNESS_BUILD_DIR/panic"
 
-printf '%s\n' '=== C++ exceptions (cpp/exceptions.cpp) ==='
-"$build_dir/exceptions"
-
-printf '\n%s\n' '=== C++ std::expected (cpp/expected.cpp) ==='
-"$build_dir/expected"
-
-printf '\n%s\n' '=== Rust Result (rust/result.rs) ==='
-"$build_dir/result"
-
-printf '\n%s\n' '=== Rust panic (rust/panic.rs) ==='
-RUST_BACKTRACE=0 "$build_dir/panic" 2>&1
+run_sample exceptions 'C++: exceptions' "$HARNESS_BUILD_DIR/exceptions"
+run_sample expected 'C++: std::expected' "$HARNESS_BUILD_DIR/expected"
+run_sample result 'Rust: Result' "$HARNESS_BUILD_DIR/result"
+run_sample panic 'Rust: caught panic payload' \
+    env RUST_BACKTRACE=0 "$HARNESS_BUILD_DIR/panic"
